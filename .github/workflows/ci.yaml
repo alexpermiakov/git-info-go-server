@@ -14,7 +14,7 @@ permissions:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: gitinfo
+  ECR_REPOSITORY: idp/gitinfo
   AWS_ROLE_ARN: arn:aws:iam::935743309409:role/GitHubActionsDevRole
 
 jobs:
