@@ -7,9 +7,15 @@ on:
   pull_request:
     branches: [main]
 
+# Required for OIDC authentication
+permissions:
+  id-token: write
+  contents: read
+
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: gitinfo
+  AWS_ROLE_ARN: arn:aws:iam::935743309409:role/GitHubActionsDevRole
 
 jobs:
   quality-gate:
@@ -56,8 +62,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -69,7 +74,6 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ steps.prep.outputs.tag }}
         run: |
-          # Injecting versioning info into the binary via ldflags
           docker build \
             --build-arg VERSION=${{ env.IMAGE_TAG }} \
             --build-arg COMMIT=${{ github.sha }} \
@@ -78,8 +82,8 @@ jobs:
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-          # Only update 'latest' on a semantic version release
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
             docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           fi
+
