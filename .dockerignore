@@ -1,0 +1,19 @@
+# Exclude git metadata
+.git
+.gitignore
+
+# Exclude documentation and local config
+README.md
+LICENSE
+docs/
+*.pdf
+
+# Exclude local build artifacts and OS junk
+bin/
+dist/
+.DS_Store
+*.exe
+
+# Exclude IDE settings
+.vscode/
+.idea/

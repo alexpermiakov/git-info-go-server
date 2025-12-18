@@ -7,25 +7,26 @@ ARG BUILD_TIME=unknown
 
 WORKDIR /app
 
-COPY go.mod ./
+COPY go.mod go.sum* ./
+
 RUN go mod download
 
 COPY . .
 
-# CGO_ENABLED=0 makes it a statically linked binary (no libc dependency)
 RUN CGO_ENABLED=0 GOOS=linux go build \
     -ldflags "-X 'main.Version=${VERSION}' \
               -X 'main.Commit=${COMMIT}' \
               -X 'main.BuildTime=${BUILD_TIME}'" \
-    -o gitinfo main.go
+    main.go
 
 # --- Stage 2: Final ---
 FROM gcr.io/distroless/static-debian12:latest
 
 WORKDIR /
 
-COPY --from=builder /app/gitinfo /gitinfo
+COPY --from=builder /app/main /main
+
 USER nonroot:nonroot
 EXPOSE 8080
 
-ENTRYPOINT ["/gitinfo"]
+ENTRYPOINT ["/main"]
