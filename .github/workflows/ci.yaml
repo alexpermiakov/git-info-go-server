@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: us-east-1
+  AWS_REGION: us-west-2
   ECR_REPOSITORY: idp/gitinfo
   AWS_ROLE_ARN: arn:aws:iam::935743309409:role/GitHubActionsDevRole
 
