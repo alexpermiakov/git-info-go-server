@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -30,6 +31,8 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", versionHandler)
+	mux.HandleFunc("/health", healthHandler)
+	mux.HandleFunc("/ready", readyHandler)
 
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -82,4 +85,14 @@ func versionHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(info); err != nil {
 		slog.Error("failed to encode version", "error", err)
 	}
+}
+
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "OK")
+}
+
+func readyHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Ready")
 }
