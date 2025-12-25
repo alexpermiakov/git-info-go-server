@@ -14,8 +14,8 @@ permissions:
 
 env:
   AWS_REGION: us-west-2
-  ECR_REPOSITORY: idp/gitinfo
-  AWS_ROLE_ARN: arn:aws:iam::864992049050:role/GitHubActionsDevRole
+  ECR_REPOSITORY: idp/version
+  AWS_ROLE_ARN: arn:aws:iam::864992049050:role/GitHubActionsRole
 
 jobs:
   quality-gate:
